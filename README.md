@@ -26,9 +26,7 @@ Every failure carries a **fingerprint**: a stable hash of the normalized failure
 
 ## Quickstart
 
-```bash
-uv tool install verdict-mcp     # or: pip install verdict-mcp
-```
+No install step needed — `uvx` fetches it on first use. (Or `uv tool install verdict-mcp` / `pip install verdict-mcp` for a permanent `verdict-mcp` command.)
 
 **Claude Code** — `.mcp.json` in your project root:
 
@@ -36,7 +34,8 @@ uv tool install verdict-mcp     # or: pip install verdict-mcp
 {
   "mcpServers": {
     "verdict": {
-      "command": "verdict-mcp",
+      "command": "uvx",
+      "args": ["verdict-mcp"],
       "env": { "VERDICT_PROJECT": "." }
     }
   }

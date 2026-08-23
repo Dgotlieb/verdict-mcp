@@ -15,14 +15,12 @@ Per the build plan: never start a session without a pre-written first task.
    script's venv (impact always fell back to the full suite), and `--json-report-omit` (nargs='+')
    was swallowing the test paths (every non-`all` scope ran the whole suite).
    **Still to do by hand:** open `cd ~/demo-dogfood && claude`, ask it to fix `divide()` and watch it use `verify`.
-3. Create the GitHub repo, push, confirm CI is green:
-   `gh repo create dgotlieb/verdict-mcp --public --source=. --push && gh run watch`
+3. ~~Create the GitHub repo, push, confirm CI is green.~~ **Done.** Published `v0.1.0a1` to PyPI via trusted publishing (`release.yml` on `v*` tags).
 
 ## Soon (weeks 1–2 of the plan)
 
-- pyproject: set real GitHub URLs + author email.
-- LICENSE file is Apache-2.0 boilerplate — confirm and fill copyright line.
-- Decide the real name (is `verdict-mcp` free on PyPI? check before attachment forms).
+- On the Apple Silicon Mac: clean `uv sync && uv run pytest`, first podman run, `uvx verdict-mcp` from a fresh shell.
+- README: demo GIF/screenshot of the `~/demo-dogfood` session.
 - First build-in-public post: "Anatomy of an MCP verification server" (outline from the scaffold).
 
 ## Parked decisions (don't reopen until v0.2)
