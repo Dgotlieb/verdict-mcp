@@ -7,9 +7,12 @@ worktree is never mutated by a check run.
 
 from __future__ import annotations
 
+import shutil
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Protocol
+
+TIMEOUT_EXIT = 124  # same convention as coreutils `timeout`
 
 
 @dataclass
@@ -19,6 +22,13 @@ class RunOutcome:
     stderr: str
     artifacts: Path  # directory where the command was told to write report files
     runner_name: str
+    scratch: Path | None = None  # extra temp root to remove on cleanup (e.g. local work copy)
+
+    def cleanup(self) -> None:
+        """Remove temp dirs created for this run. Safe to call more than once."""
+        for d in (self.scratch, self.artifacts):
+            if d is not None:
+                shutil.rmtree(d, ignore_errors=True)
 
 
 class Runner(Protocol):

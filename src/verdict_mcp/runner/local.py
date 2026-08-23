@@ -12,7 +12,7 @@ import subprocess
 import tempfile
 from pathlib import Path
 
-from .base import RunOutcome
+from .base import TIMEOUT_EXIT, RunOutcome
 
 _IGNORE = shutil.ignore_patterns(
     ".git", ".venv", "venv", "node_modules", "__pycache__", ".pytest_cache", ".verdict"
@@ -38,22 +38,39 @@ class LocalRunner:
 
             command[0] = sys.executable
 
-        proc = subprocess.run(
-            command,
-            cwd=workdir,
-            capture_output=True,
-            text=True,
-            timeout=timeout_s,
-            check=False,
-            env=_check_env(workdir, artifacts),
-        )
+        try:
+            proc = subprocess.run(
+                command,
+                cwd=workdir,
+                capture_output=True,
+                text=True,
+                timeout=timeout_s,
+                check=False,
+                env=_check_env(workdir, artifacts),
+            )
+        except subprocess.TimeoutExpired as exc:  # subprocess.run already killed the child
+            return RunOutcome(
+                exit_code=TIMEOUT_EXIT,
+                stdout=_text(exc.stdout),
+                stderr=_text(exc.stderr) + f"\nverdict: check timed out after {timeout_s}s",
+                artifacts=artifacts,
+                runner_name=self.name,
+                scratch=tmp,
+            )
         return RunOutcome(
             exit_code=proc.returncode,
             stdout=proc.stdout,
             stderr=proc.stderr,
             artifacts=artifacts,
             runner_name=self.name,
+            scratch=tmp,
         )
+
+
+def _text(data: str | bytes | None) -> str:
+    if data is None:
+        return ""
+    return data.decode(errors="replace") if isinstance(data, bytes) else data
 
 
 def _check_env(workdir: Path, artifacts: Path) -> dict[str, str]:

@@ -10,7 +10,7 @@ from . import gitdiff, impact
 from .adapters import lint_adapters, pytest_adapter
 from .config import Config
 from .history import HistoryStore
-from .runner import pick_runner
+from .runner import TIMEOUT_EXIT, choose_runner
 from .schema import Counts, Failure, FailureDetail, VerifyResult
 
 
@@ -34,25 +34,33 @@ def verify_core(worktree: Path, scope: str | None = None, base: str | None = Non
     else:
         selection = impact.select_tests(worktree, changed, cfg.packages)
 
-    runner = pick_runner(cfg.prefer, image=cfg.image, setup_cmd=cfg.setup_cmd)
+    runner, runner_note = choose_runner(cfg.prefer, image=cfg.image, setup_cmd=cfg.setup_cmd)
     outcome = runner.run(worktree, pytest_adapter.command(selection.test_paths), timeout_s=cfg.timeout_s)
-
-    report = outcome.artifacts / pytest_adapter.REPORT_FILE
-    if not report.exists():
-        # pytest itself failed to run (bad env, collection error crash, missing plugin)
-        return VerifyResult(
-            run_id=run_id,
-            ok=False,
-            scope=selection.scope,
-            selection_note=f"pytest did not produce a report (exit {outcome.exit_code}); "
-            f"stderr tail: {outcome.stderr[-500:]!r}",
-            counts=Counts(),
-            failures=[],
-            duration_ms=int((time.monotonic() - t0) * 1000),
-            runner=outcome.runner_name,
-        )
-
-    counts_dict, failures, details = pytest_adapter.parse_report(report, changed)
+    try:
+        report = outcome.artifacts / pytest_adapter.REPORT_FILE
+        if not report.exists():
+            # pytest itself failed to run (timeout, bad env, collection crash, missing plugin)
+            if outcome.exit_code == TIMEOUT_EXIT:
+                why = f"check timed out after {cfg.timeout_s}s (limits.timeout_s in verdict.toml)"
+            else:
+                why = (
+                    f"pytest did not produce a report (exit {outcome.exit_code}); "
+                    f"stderr tail: {outcome.stderr[-500:]!r}"
+                )
+            return VerifyResult(
+                run_id=run_id,
+                ok=False,
+                scope=selection.scope,
+                selection_note=why,
+                counts=Counts(),
+                failures=[],
+                duration_ms=int((time.monotonic() - t0) * 1000),
+                runner=outcome.runner_name,
+                runner_note=runner_note,
+            )
+        counts_dict, failures, details = pytest_adapter.parse_report(report, changed)
+    finally:
+        outcome.cleanup()
 
     _annotate_and_record(failures, details, store, run_id, commit)
 
@@ -67,6 +75,7 @@ def verify_core(worktree: Path, scope: str | None = None, base: str | None = Non
         truncated=truncated,
         duration_ms=int((time.monotonic() - t0) * 1000),
         runner=outcome.runner_name,
+        runner_note=runner_note,
     )
     store.record_run(run_id, result.model_dump_json())
     return result
@@ -79,7 +88,7 @@ def run_checks_core(worktree: Path, checks: list[str] | None = None) -> VerifyRe
     store = HistoryStore(verdict_dir(worktree))
     run_id = uuid.uuid4().hex[:12]
     commit = gitdiff.head_commit(worktree)
-    runner = pick_runner(cfg.prefer, image=cfg.image, setup_cmd=cfg.setup_cmd)
+    runner, runner_note = choose_runner(cfg.prefer, image=cfg.image, setup_cmd=cfg.setup_cmd)
 
     checks = checks or ["ruff"]
     failures: list[Failure] = []
@@ -93,6 +102,7 @@ def run_checks_core(worktree: Path, checks: list[str] | None = None) -> VerifyRe
             failures += lint_adapters.parse_mypy(out.stdout)
         else:
             continue
+        out.cleanup()
         runner_name = out.runner_name
 
     details = [
@@ -110,6 +120,7 @@ def run_checks_core(worktree: Path, checks: list[str] | None = None) -> VerifyRe
         truncated=len(failures) > cfg.max_failures,
         duration_ms=int((time.monotonic() - t0) * 1000),
         runner=runner_name,
+        runner_note=runner_note,
     )
     store.record_run(run_id, result.model_dump_json())
     return result

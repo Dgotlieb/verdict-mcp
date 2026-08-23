@@ -80,6 +80,9 @@ class VerifyResult(BaseModel):
     )
     duration_ms: int = 0
     runner: str = Field(default="", description="Execution backend, e.g. 'podman', 'docker', 'local'")
+    runner_note: str | None = Field(
+        default=None, description="Honesty field: set when checks ran somewhere other than configured"
+    )
 
 
 class FailureDetail(BaseModel):
