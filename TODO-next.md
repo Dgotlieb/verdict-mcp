@@ -8,8 +8,15 @@ Per the build plan: never start a session without a pre-written first task.
    "Current state" notes in CLAUDE.md. Both configurations work: a prebuilt `image` (check run is
    `--network=none`, ~2s) and plain `python:3.12-slim` + `setup_cmd = "pip install pytest pytest-json-report"`
    (~10s). Note: `uv run` is broken on this Mac (cryptography wheels); use `.venv/bin/python -m pytest`.
-2. **Wire into Claude Code for a dogfood run:** `.mcp.json` per README, then ask the agent to break/fix `demo_pkg/calc.py` and watch it use `verify` + `preexisting`.
-3. Create the GitHub repo, push, confirm CI is green.
+2. ~~Wire into Claude Code for a dogfood run~~ **Done 2026-08-23 (scripted).** `~/demo-dogfood` has a
+   `.mcp.json` + container config; the verify → break → fix loop was driven through the real stdio
+   server via `fastmcp.Client` and behaves correctly (impact selects 1 test, `preexisting` flips).
+   Two bugs found and fixed by dogfooding: grimp couldn't import the target project from the console
+   script's venv (impact always fell back to the full suite), and `--json-report-omit` (nargs='+')
+   was swallowing the test paths (every non-`all` scope ran the whole suite).
+   **Still to do by hand:** open `cd ~/demo-dogfood && claude`, ask it to fix `divide()` and watch it use `verify`.
+3. Create the GitHub repo, push, confirm CI is green:
+   `gh repo create dgotlieb/verdict-mcp --public --source=. --push && gh run watch`
 
 ## Soon (weeks 1–2 of the plan)
 

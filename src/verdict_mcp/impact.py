@@ -53,11 +53,9 @@ def select_tests(worktree: Path, changed: list[str], packages: list[str]) -> Sel
         return Selection(sorted(directly_changed_tests), "impact", SELECTION_NOTE)
 
     try:
-        import grimp
-
-        graph = grimp.build_graph(*packages, include_external_packages=False)
+        graph = _build_graph(worktree, packages)
     except Exception as exc:  # noqa: BLE001 — any graph failure must degrade, not crash
-        return Selection([], "all", f"import graph unavailable ({type(exc).__name__}); running full suite")
+        return Selection([], "all", f"import graph unavailable ({type(exc).__name__}: {exc}); running full suite")
 
     roots = ["src", *packages]
     affected_modules: set[str] = set()
@@ -79,6 +77,28 @@ def select_tests(worktree: Path, changed: list[str], packages: list[str]) -> Sel
     if not selected:
         return Selection([], "all", "no affected tests found via import graph; running full suite as a safety net")
     return Selection(sorted(selected), "impact", SELECTION_NOTE)
+
+
+def _build_graph(worktree: Path, packages: list[str]):
+    """Build the grimp graph with the *target* project importable.
+
+    The server runs as a console script from its own venv, so the project under
+    test is normally not on sys.path. Put the worktree (and src/ layout) first
+    while grimp scans, then restore sys.path so nothing leaks between calls.
+    Grimp only reads source files; it does not import/execute the project.
+    """
+    import sys
+
+    import grimp
+
+    extra = [str(worktree / "src"), str(worktree)]
+    extra = [e for e in extra if Path(e).is_dir()]
+    saved = list(sys.path)
+    sys.path[:0] = extra
+    try:
+        return grimp.build_graph(*packages, include_external_packages=False, cache_dir=None)
+    finally:
+        sys.path[:] = saved
 
 
 def _is_test_path(path: str) -> bool:

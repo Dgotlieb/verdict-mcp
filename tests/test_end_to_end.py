@@ -88,3 +88,23 @@ def test_server_tools_registered():
     tools = anyio.run(mcp.list_tools)
     names = {t.name for t in tools}
     assert {"verify", "explain_failure", "history", "run_checks"} <= names
+
+
+def test_verify_path_scope_runs_only_that_file(demo_repo):
+    from verdict_mcp.core import verify_core
+
+    result = verify_core(demo_repo, scope="tests/test_text.py")
+    assert result.scope == "path:tests/test_text.py"
+    assert result.counts.selected == 1
+    assert result.ok
+
+
+def test_verify_impact_scope_selects_only_affected_tests(demo_repo):
+    from verdict_mcp.core import verify_core
+
+    text = demo_repo / "demo_pkg" / "text.py"
+    text.write_text(text.read_text() + "\n# touched\n")
+    result = verify_core(demo_repo)  # impact selection
+    assert result.scope == "impact"
+    assert result.counts.selected == 1
+    assert result.ok  # test_calc's pre-existing failure must NOT be in this verdict

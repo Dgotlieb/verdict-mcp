@@ -12,25 +12,19 @@ REPORT_FILE = "verdict-pytest-report.json"
 
 
 def command(test_paths: list[str]) -> list[str]:
-    """The pytest invocation. Report goes to the artifacts dir via env var expansion in sh."""
-    base = [
+    """The pytest invocation. Report goes to the artifacts dir; runners resolve
+    `$VERDICT_ARTIFACTS` to a concrete path.
+
+    `--json-report-omit` is nargs='+': anything after it is swallowed as an omit
+    value, so it must be followed by another option, never by the test paths.
+    """
+    return [
         "python", "-m", "pytest",
-        "-q", "-p", "no:cacheprovider",
         "--json-report", f"--json-report-file=$VERDICT_ARTIFACTS/{REPORT_FILE}",
         "--json-report-omit", "collectors", "warnings",
-    ]
-    return base + test_paths
-
-
-def command_local(test_paths: list[str], artifacts: Path) -> list[str]:
-    """Variant with a concrete artifacts path (no shell expansion in local runner)."""
-    base = [
-        "python", "-m", "pytest",
         "-q", "-p", "no:cacheprovider",
-        "--json-report", f"--json-report-file={artifacts / REPORT_FILE}",
-        "--json-report-omit", "collectors", "warnings",
+        *test_paths,
     ]
-    return base + test_paths
 
 
 _OUTCOME_MAP = {

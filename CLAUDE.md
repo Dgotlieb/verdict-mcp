@@ -18,7 +18,7 @@ An MCP server giving coding agents structured, sandboxed test feedback: impact-s
 ## Commands
 
 ```bash
-uv run pytest -q                 # full suite (20 tests; 2 are @container and skip without a live engine)
+uv run pytest -q                 # full suite (29 tests; 3 are @container and skip without a live engine)
 uv run ruff check src tests     # lint
 ```
 
@@ -40,4 +40,5 @@ uv pip install --python .venv/bin/python -e ".[dev]" anyio "cryptography<49"
 
 - Scaffolded 2026-08-23 in a cloud sandbox; 17 tests green, ruff clean.
 - **`ContainerRunner` verified against Docker Desktop** (2026-08-23). Two bugs fixed on first run: `detect_engine` now requires `<engine> info` to succeed (a podman binary with a stopped VM was being chosen over a live docker), and `$VERDICT_ARTIFACTS` is resolved to `/artifacts` before shell-quoting (quoting had suppressed expansion, so the JSON report never reached the artifacts mount). `tests/test_container_runner.py` builds `verdict-test-py312:local` once per session and runs `verify_core` through the real engine with `--network=none`.
+- Dogfooded through the stdio server against `~/demo-dogfood` (2026-08-23): fixed grimp needing the target project on sys.path (`impact._build_graph`) and pytest's nargs='+' `--json-report-omit` eating test paths. `choose_runner()` reports fallbacks in `VerifyResult.runner_note`; runs time out to exit 124 and kill their container.
 - Parked for v0.2 (don't reopen early): coverage-based selection, flake detection, container resource limits, non-Python adapters.
