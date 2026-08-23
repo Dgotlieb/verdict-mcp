@@ -1,11 +1,11 @@
 [project]
 name = "verdict-mcp"
-version = "0.1.0.dev0"
+version = "0.1.0a1"
 description = "Structured, sandboxed verification feedback for coding agents. An MCP server that turns raw test/lint output into tiny, typed verdicts with failure fingerprints and history."
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "Apache-2.0" }
-authors = [{ name = "Daniel Gotlieb" }]
+authors = [{ name = "Daniel Gotlieb", email = "dgotlieb8@gmail.com" }]
 keywords = ["mcp", "agents", "testing", "pytest", "ai", "verification"]
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -32,8 +32,8 @@ dev = [
 verdict-mcp = "verdict_mcp.server:main"
 
 [project.urls]
-Homepage = "https://github.com/dgotlieb/verdict-mcp"
-Issues = "https://github.com/dgotlieb/verdict-mcp/issues"
+Homepage = "https://github.com/Dgotlieb/verdict-mcp"
+Issues = "https://github.com/Dgotlieb/verdict-mcp/issues"
 
 [build-system]
 requires = ["hatchling"]
