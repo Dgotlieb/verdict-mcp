@@ -1,0 +1,8 @@
+[project]
+packages = ["demo_pkg"]
+
+[runner]
+prefer = "local"  # demo runs without a container (verdict's own tests rely on this).
+# To run it in a container instead, drop `prefer` and either point `image` at an env
+# that has pytest + pytest-json-report, or add:
+# setup_cmd = "pip install pytest pytest-json-report"   # runs with network; the check run does not
