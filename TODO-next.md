@@ -19,7 +19,7 @@ Per the build plan: never start a session without a pre-written first task.
 
 ## Soon (weeks 1–2 of the plan)
 
-- On the Apple Silicon Mac: clean `uv sync && uv run pytest`, first podman run, `uvx verdict-mcp` from a fresh shell.
+- ~~Apple Silicon Mac validation~~ done: clean install, podman rootless arm64, `uvx verdict-mcp@0.1.0a2` all green. Released 0.1.0a2.
 - README: demo GIF/screenshot of the `~/demo-dogfood` session.
 - First build-in-public post: "Anatomy of an MCP verification server" (outline from the scaffold).
 
