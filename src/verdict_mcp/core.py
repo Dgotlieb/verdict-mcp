@@ -13,6 +13,8 @@ from .history import HistoryStore
 from .runner import TIMEOUT_EXIT, choose_runner
 from .schema import Counts, Failure, FailureDetail, VerifyResult
 
+CONTAINER_START_EXITS = {125, 126, 127}  # docker/podman: engine error / not executable / not found
+
 
 def verdict_dir(worktree: Path) -> Path:
     return worktree / ".verdict"
@@ -42,6 +44,15 @@ def verify_core(worktree: Path, scope: str | None = None, base: str | None = Non
             # pytest itself failed to run (timeout, bad env, collection crash, missing plugin)
             if outcome.exit_code == TIMEOUT_EXIT:
                 why = f"check timed out after {cfg.timeout_s}s (limits.timeout_s in verdict.toml)"
+            elif outcome.runner_name != "local" and outcome.exit_code in CONTAINER_START_EXITS:
+                # docker/podman use 125 for "couldn't start the container at all"
+                # (image pull/auth failure, bad mount, daemon problem) — not a test result.
+                why = (
+                    f"container engine '{outcome.runner_name}' could not start the check "
+                    f"(exit {outcome.exit_code}); image {cfg.image!r}. "
+                    f"Engine said: {outcome.stderr.strip()[-500:]!r}. "
+                    f"Try `{outcome.runner_name} pull {cfg.image}` on this machine."
+                )
             else:
                 why = (
                     f"pytest did not produce a report (exit {outcome.exit_code}); "

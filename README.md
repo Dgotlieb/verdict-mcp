@@ -70,6 +70,8 @@ VERDICT_PROJECT=. verdict-mcp   # then connect any MCP client, or use the MCP in
 
 Checks run in an ephemeral container (podman preferred, docker fallback): worktree mounted **read-only** at `/src`, copied to a writable `/work` inside the container, `--network=none` for the check run. Your host environment is never mutated by a test run. If `setup_cmd` is configured, that step runs *with* network before the check; prefer a prebuilt image for a tighter posture. No container runtime → explicit `prefer = "local"` fallback runs checks against a temp copy of your worktree (still never in place). See [SECURITY.md](SECURITY.md) for the full threat model and known limitations.
 
+**Troubleshooting:** if a verdict says `container engine 'podman' could not start the check`, run the suggested `podman pull <image>` by hand — the engine's own error is the answer. One known trap on macOS: a `"credsStore": "gcloud"` line in `~/.docker/config.json` makes podman call the gcloud credential helper for *every* registry, including docker.io; an expired gcloud login then breaks all pulls. Fix with `gcloud auth login` or remove that line.
+
 ## Honest limitations
 
 - Impact selection uses the **static import graph** — approximate by design. Dynamic imports, fixture-by-name resolution, and data-driven tests can be missed; `verify(scope="all")` is always available and verdict says in `selection_note` whenever it falls back.

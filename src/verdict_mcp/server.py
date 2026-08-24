@@ -82,7 +82,20 @@ def run_checks(checks: list[str] | None = None) -> dict:
     return run_checks_core(_project(), checks).model_dump(exclude_none=True)
 
 
-def main() -> None:
+def main(argv: list[str] | None = None) -> None:
+    import argparse
+    from importlib.metadata import version
+
+    parser = argparse.ArgumentParser(
+        prog="verdict-mcp",
+        description=(
+            "MCP server (stdio) giving coding agents structured, sandboxed test feedback. "
+            "Point it at a project with VERDICT_PROJECT=/path/to/repo (default: current directory)."
+        ),
+        epilog="Configure via verdict.toml in the project root. Docs: https://github.com/Dgotlieb/verdict-mcp",
+    )
+    parser.add_argument("--version", action="version", version=f"%(prog)s {version('verdict-mcp')}")
+    parser.parse_args(argv)
     mcp.run()
 
 

@@ -102,3 +102,29 @@ def _demo_repo(tmp_path: Path, runner_line: str) -> Path:
         cwd=repo, check=True,
     )
     return repo
+
+
+@pytest.fixture()
+def engine_that_cannot_start_images(tmp_path: Path, monkeypatch) -> Path:
+    """`info` works, `run` fails like a registry/auth problem would (exit 125)."""
+    fake_bin = tmp_path / "bin"
+    fake_bin.mkdir()
+    _fake_engine(
+        fake_bin, "docker",
+        'case "$1" in info) exit 0;; kill) exit 0;; esac\n'
+        "echo 'Error: initializing source docker://python:3.12-slim: unauthorized' >&2\nexit 125\n",
+    )
+    _fake_engine(fake_bin, "podman", "exit 125\n")
+    monkeypatch.setenv("PATH", f"{fake_bin}{os.pathsep}{os.environ['PATH']}")
+    return fake_bin
+
+
+def test_verify_explains_when_container_cannot_start(engine_that_cannot_start_images, tmp_path):
+    from verdict_mcp.core import verify_core
+
+    repo = _demo_repo(tmp_path, 'prefer = "docker"')
+    result = verify_core(repo, scope="all")
+    assert not result.ok
+    assert result.counts.selected == 0
+    note = result.selection_note or ""
+    assert "container" in note and "docker" in note and "unauthorized" in note
