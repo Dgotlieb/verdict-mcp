@@ -96,4 +96,4 @@ Checks run in an ephemeral container (podman preferred, docker fallback): worktr
 
 Apache-2.0
 
-<!-- mcp-name: io.github.dgotlieb/verdict-mcp -->
+<!-- mcp-name: io.github.Dgotlieb/verdict-mcp -->
