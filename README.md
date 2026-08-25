@@ -95,3 +95,5 @@ Checks run in an ephemeral container (podman preferred, docker fallback): worktr
 ## License
 
 Apache-2.0
+
+<!-- mcp-name: io.github.dgotlieb/verdict-mcp -->
