@@ -23,6 +23,16 @@ Per the build plan: never start a session without a pre-written first task.
 - README: demo GIF/screenshot of the `~/demo-dogfood` session.
 - First build-in-public post: "Anatomy of an MCP verification server" (outline from the scaffold).
 
+## v0.2 priorities (from the python-dotenv trial, 2026-08-24)
+
+Trial: cloned python-dotenv (255 tests), two-line verdict.toml with `setup_cmd`, worked unmodified.
+1. **Per-run env setup is the wall: ~2min of `pip install` on every verify.** Agents won't wait.
+   Order of attack: reuse a built image layer keyed on (base image, setup_cmd, deps files hash),
+   then the result cache from the build plan (tree hash + check + image digest).
+2. Impact selection is coarse on hub modules (touching `variables.py` selected 184/255 — correct
+   but wide). Fine for v0.1; coverage-based maps stay the v0.2 answer.
+3. Selection excluded ~70 tests and said why in `selection_note` — honesty contract held.
+
 ## Parked decisions (don't reopen until v0.2)
 
 - Coverage-based selection (grimp is the v0.1 answer)
