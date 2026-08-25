@@ -30,7 +30,7 @@ jobs:
           fetch-depth: 0   # tags and history, so version and commit claims resolve
 
       - id: substantiate
-        uses: Dgotlieb/substantiate@v1
+        uses: Dgotlieb/substantiate@06ead258dbbddb3b976e42e7cde72271c6b8a080  # v1
         with:
           report: ${{ github.event.issue.body || github.event.pull_request.body }}
           online: "true"
