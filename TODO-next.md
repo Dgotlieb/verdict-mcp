@@ -33,6 +33,12 @@ Trial: cloned python-dotenv (255 tests), two-line verdict.toml with `setup_cmd`,
    but wide). Fine for v0.1; coverage-based maps stay the v0.2 answer.
 3. Selection excluded ~70 tests and said why in `selection_note` — honesty contract held.
 
+## Distribution status (2026-08-25)
+
+- Published `io.github.Dgotlieb/verdict-mcp` 0.1.0a4 to the official MCP Registry.
+- awesome-mcp-servers PR open: https://github.com/punkpeye/awesome-mcp-servers/pull/12903
+- Still to do: mcp.so / PulseMCP / Glama submission forms (Daniel, ~2 min each); Show HN Saturday ~9:30am ET.
+
 ## After the Show HN launch
 
 - Bump `.github/workflows/substantiate.yml` pin from 06ead258 (0.1.1) to
