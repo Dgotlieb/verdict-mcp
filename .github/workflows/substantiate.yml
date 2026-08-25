@@ -1,0 +1,44 @@
+# Checks the factual claims in a new issue or pull request description against
+# this repository, and comments only when something failed to resolve.
+#
+# It never blocks, never closes, and never says anything about who wrote the
+# text -- it reports which claims it could not find evidence for, and leaves the
+# judgement to a human. See https://github.com/Dgotlieb/substantiate
+name: Substantiate
+
+on:
+  issues:
+    types: [opened]
+  pull_request_target:
+    types: [opened]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # pull_request_target runs with a token that can comment, so check out
+          # the base repository and never the pull request head: nothing from a
+          # contributor is executed, and their description is read as data.
+          ref: ${{ github.event.pull_request.base.sha || github.sha }}
+          fetch-depth: 0   # tags and history, so version and commit claims resolve
+
+      - id: substantiate
+        uses: Dgotlieb/substantiate@v1
+        with:
+          report: ${{ github.event.issue.body || github.event.pull_request.body }}
+          online: "true"
+
+      - name: Comment when claims did not resolve
+        if: steps.substantiate.outputs.unresolved != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BODY: ${{ steps.substantiate.outputs.markdown }}
+          NUMBER: ${{ github.event.issue.number || github.event.pull_request.number }}
+        run: gh issue comment "$NUMBER" --repo "$GITHUB_REPOSITORY" --body "$BODY"
