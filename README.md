@@ -1,5 +1,10 @@
 # verdict
 
+
+https://github.com/user-attachments/assets/62923912-98aa-4246-8bc8-4adf55ae3ff8
+
+
+
 [![CI](https://github.com/Dgotlieb/verdict-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/Dgotlieb/verdict-mcp/actions/workflows/ci.yml)
 [![PyPI](https://img.shields.io/pypi/v/verdict-mcp)](https://pypi.org/project/verdict-mcp/)
 [![Python](https://img.shields.io/pypi/pyversions/verdict-mcp)](https://pypi.org/project/verdict-mcp/)
