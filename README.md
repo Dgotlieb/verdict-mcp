@@ -1,5 +1,10 @@
 # verdict
 
+[![CI](https://github.com/Dgotlieb/verdict-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/Dgotlieb/verdict-mcp/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/verdict-mcp)](https://pypi.org/project/verdict-mcp/)
+[![Python](https://img.shields.io/pypi/pyversions/verdict-mcp)](https://pypi.org/project/verdict-mcp/)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
+
 **Structured, sandboxed verification feedback for coding agents.**
 
 An [MCP](https://modelcontextprotocol.io) server that replaces your agent's `pytest` shell-outs with something built for the agent inner loop: impact-selected tests, run in an isolated environment, returning **compact typed verdicts** instead of 40,000 tokens of raw runner output — with **failure fingerprints** that tell the agent whether a failure is *its* regression or was broken all along.
