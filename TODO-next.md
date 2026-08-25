@@ -33,6 +33,13 @@ Trial: cloned python-dotenv (255 tests), two-line verdict.toml with `setup_cmd`,
    but wide). Fine for v0.1; coverage-based maps stay the v0.2 answer.
 3. Selection excluded ~70 tests and said why in `selection_note` — honesty contract held.
 
+## After the Show HN launch
+
+- Bump `.github/workflows/substantiate.yml` pin from 06ead258 (0.1.1) to
+  c6ae746b882a2454bcb8f2fa5d8587278299f8c3 (0.1.3). Deliberately deferred:
+  don't change a pinned action during launch week; the 0.1.3 fixes are
+  C-enum-specific and don't affect this Python repo.
+
 ## Parked decisions (don't reopen until v0.2)
 
 - Coverage-based selection (grimp is the v0.1 answer)
