@@ -37,7 +37,10 @@ Trial: cloned python-dotenv (255 tests), two-line verdict.toml with `setup_cmd`,
 
 - Published `io.github.Dgotlieb/verdict-mcp` 0.1.0a4 to the official MCP Registry.
 - awesome-mcp-servers PR open: https://github.com/punkpeye/awesome-mcp-servers/pull/12903
-- Still to do: mcp.so / PulseMCP / Glama submission forms (Daniel, ~2 min each); Show HN Saturday ~9:30am ET.
+- Glama: auto-indexed already (License A / Quality A). mcp.so / PulseMCP forms: optional, anytime.
+- Reddit: dropped for now (account has 3 karma; r/ClaudeAI feed needs 50, r/mcp post got spam-filtered).
+  Revisit after karma grows; ready-made copy lives in ~/Desktop/reddit-posts.md.
+- **Show HN: Saturday ~9:30am ET** — title + first comment are in the session runbook; HN account exists.
 
 ## After the Show HN launch
 
