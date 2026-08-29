@@ -40,7 +40,10 @@ Trial: cloned python-dotenv (255 tests), two-line verdict.toml with `setup_cmd`,
 - Glama: auto-indexed already (License A / Quality A). mcp.so / PulseMCP forms: optional, anytime.
 - Reddit: dropped for now (account has 3 karma; r/ClaudeAI feed needs 50, r/mcp post got spam-filtered).
   Revisit after karma grows; ready-made copy lives in ~/Desktop/reddit-posts.md.
-- **Show HN: Saturday ~9:30am ET** — title + first comment are in the session runbook; HN account exists.
+- **Show HN: postponed** — HN is restricting Show HNs from new accounts (2026-08-29). Plan: build
+  karma by commenting genuinely for 1-2 weeks (GPU/devops/Python/MCP threads), then launch with the
+  saved drill (~/Desktop/show-hn.md). Consider timing it with v0.2's env-caching speedup for a
+  stronger story. Do NOT dodge via plain submission or proxy submitters.
 
 ## After the Show HN launch
 
